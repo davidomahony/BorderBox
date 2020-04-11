@@ -1,0 +1,8 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "BorderBox",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "cordova": {}
+}

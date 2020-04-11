@@ -1,0 +1,20 @@
+headerRow{
+    height: 20%;
+    width: 100%;
+}
+
+
+headerTitle{
+    width: 50%;
+    justify-content: center;
+    align-Items: 'center'
+}
+
+menuIcon{
+    min-width: 100px;
+}
+
+.ion-page {
+    max-width: 1000px;
+    margin: auto;
+  }

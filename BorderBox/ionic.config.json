@@ -1,0 +1,7 @@
+{
+  "name": "BorderBox",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
