@@ -95,7 +95,7 @@ export class HomeContent extends React.Component<{}, State> {
         <IonCard>
             <IonCardHeader>
                 <IonCardTitle>
-                    Magical Title
+                    Home
                 </IonCardTitle>
             </IonCardHeader>
             <IonCardContent>

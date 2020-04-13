@@ -45,11 +45,30 @@ export class Footer extends React.Component<{
     return false;
   }
 
+  GetAppropriateTitle(){
+    if (this.props.activeContent === 'Home')
+    {
+        return "Pick Your Photos"
+    }
+    else if (this.props.activeContent === 'FileUpload')
+    {
+        return "Select Style"
+    }
+    else if (this.props.activeContent === 'SelectStyle')
+    {
+        return "Check Out"
+    }
+    else 
+    {
+        return "Done (Hide Me)"
+    }
+  }
+
   render() 
   {
     return(
         <IonFooter>
-            <IonButton disabled={!this.isButtonEnabled()} expand="block" onClick={() => this.props.NavigateForward()}> Continue
+            <IonButton disabled={!this.isButtonEnabled()} expand="block" onClick={() => this.props.NavigateForward()}> {this.GetAppropriateTitle()}
                 <IonIcon slot="end" src={arrowForward}></IonIcon>
             </IonButton> 
         </IonFooter>

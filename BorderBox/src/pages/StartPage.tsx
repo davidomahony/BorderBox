@@ -36,7 +36,9 @@ import CompleteContent from '../components/CompleteContent';
 
 type SelectedImage = {
     identifier: string,
-    selectImagePath: string
+    selectImagePath: string,
+    croppedImagePath: string,
+    quantity: number
   }
 
 type State = {
@@ -60,6 +62,8 @@ export class Startpage extends React.Component<{}, State> {
       }
   }
 
+  ////////////                 Navigation 
+
   navigateForward = () => {
     let nextContentindex = this.state.availableContexts.indexOf(this.state.activeContent) + 1;
     this.setState({activeContent: this.state.availableContexts[nextContentindex]})
@@ -70,6 +74,43 @@ export class Startpage extends React.Component<{}, State> {
     this.setState({activeContent: this.state.availableContexts[nextContentindex]})
   }
 
+  /////////////////////////////////////////////////////////////////
+
+  ///////////////////////// Adding & Removing images
+
+
+  addNewPhoto = (identifier: string, photUrl: string[]) => {
+    let count = this.state.numberOfImages;
+    let newPhotoCollection: SelectedImage[] = [];
+    photUrl.forEach(photo =>
+      {
+        newPhotoCollection.push({identifier: `${count}`, selectImagePath: photo, croppedImagePath: photo, quantity: 1})
+        this.setState({numberOfImages: count++})
+        this.setState({selectedImages: newPhotoCollection})
+      })
+  }
+
+  removePhoto = (identifier: string, photUrl: string) => {
+    let newSelectedImages = this.state.selectedImages.filter(item => item.identifier !== identifier);
+    this.setState({selectedImages: newSelectedImages})
+  }
+
+  updateFromCrop = (newImg: any, identifier: string) => {
+    let imgToBeUpdated = this.state.selectedImages.find(img => img.identifier === identifier);
+    if (imgToBeUpdated !== null && imgToBeUpdated !== undefined)
+    {
+      imgToBeUpdated.croppedImagePath = newImg;
+      let newSelectedImages = this.state.selectedImages.filter(item => item.identifier !== identifier);
+      newSelectedImages.push(imgToBeUpdated);
+      this.setState({selectedImages: newSelectedImages})
+      return;
+    }
+    console.log("Issue Updating Crop")
+  }
+
+
+  //////////////////////////////////////////////////////////////////
+
   SetContent(){
     if (this.state.activeContent === 'Home')
     {
@@ -77,7 +118,11 @@ export class Startpage extends React.Component<{}, State> {
     }
     if (this.state.activeContent === 'FileUpload')
     {
-      return <FileUploadContent/>
+      return <FileUploadContent 
+      removePhoto={this.removePhoto} 
+      activePhotos={this.state.selectedImages} 
+      updateFromCrop={this.updateFromCrop}
+      uploadPhoto={this.addNewPhoto}/>
     }
     if (this.state.activeContent === 'SelectStyle')
     {
