@@ -25,7 +25,10 @@ import {
   IonText,
   IonCol,
   IonRow,
-  IonIcon
+  IonIcon,
+  IonNav,
+  IonCardHeader,
+  IonCardTitle
 } from "@ionic/react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -33,6 +36,7 @@ import HomeContent from '../components/HomeContent';
 import FileUploadContent from '../components/FileUploadContent';
 import SelectStyleContent from '../components/SelectStyleContent';
 import CompleteContent from '../components/CompleteContent';
+import SlidingPanel from 'react-sliding-side-panel'
 
 type SelectedImage = {
     identifier: string,
@@ -43,10 +47,12 @@ type SelectedImage = {
 
 type State = {
     activeContent: string,
+    activeStyle: string,
     availableContexts: string[],
     selectedStyle: string,
     selectedImages: SelectedImage[],
-    numberOfImages: number
+    numberOfImages: number,
+    showCheckout: boolean,
 }
 
 export class Startpage extends React.Component<{}, State> {
@@ -55,10 +61,12 @@ export class Startpage extends React.Component<{}, State> {
   
       this.state = {
         activeContent: "Home",
+        activeStyle: "StyleOne",
         availableContexts: ['Home', 'FileUpload', 'SelectStyle', 'Complete'],
         selectedStyle: 'StyleOne',
         selectedImages: [],
-        numberOfImages: 0
+        numberOfImages: 0,
+        showCheckout : false
       }
   }
 
@@ -76,18 +84,22 @@ export class Startpage extends React.Component<{}, State> {
 
   /////////////////////////////////////////////////////////////////
 
+  /////////////////////////////////Style Page
+
+  updateActiveStyle = (newStyle: string) => {
+    this.setState({activeStyle: newStyle})
+  }
+
+  /////////////////////////////////////////
+
   ///////////////////////// Adding & Removing images
 
 
-  addNewPhoto = (identifier: string, photUrl: string[]) => {
+  addNewPhoto = (identifier: string, photoUrl: string) => {
     let count = this.state.numberOfImages;
-    let newPhotoCollection: SelectedImage[] = [];
-    photUrl.forEach(photo =>
-      {
-        newPhotoCollection.push({identifier: `${count}`, selectImagePath: photo, croppedImagePath: photo, quantity: 1})
-        this.setState({numberOfImages: count++})
-        this.setState({selectedImages: newPhotoCollection})
-      })
+    let newPhotoCollection = this.state.selectedImages;
+    newPhotoCollection.push({identifier: `${count}`, selectImagePath: photoUrl, croppedImagePath: photoUrl, quantity: 1})
+    this.setState({selectedImages: newPhotoCollection})
   }
 
   removePhoto = (identifier: string, photUrl: string) => {
@@ -124,24 +136,38 @@ export class Startpage extends React.Component<{}, State> {
       updateFromCrop={this.updateFromCrop}
       uploadPhoto={this.addNewPhoto}/>
     }
-    if (this.state.activeContent === 'SelectStyle')
+    if (this.state.activeContent === 'SelectStyle' || this.state.activeContent === 'Complete')
     {
-      return <SelectStyleContent/>
+      return <SelectStyleContent selectedImages={this.state.selectedImages} updateActiveStyle={this.updateActiveStyle}/>
     }
-    if (this.state.activeContent === 'Complete')
-    {
-      return <CompleteContent/>
-    }
+    // if (this.state.activeContent === 'Complete')
+    // {
+    //   return <CompleteContent activeStyle={this.state.activeStyle} selectedImages={this.state.selectedImages}/>
+    // }
+  }
+
+  showCheckout()
+  {
+    return this.state.activeContent === 'Complete';
+  }
+
+  closeCheckout = () => {
+    this.setState({activeContent: 'SelectStyle'})
   }
 
   render() {
     return(
       <IonPage className="maxWidth">
-        <Header activeContent={this.state.activeContent} NavigateBack={this.navigateBack}></Header>
+        {this.state.activeContent !== 'Home' ? <Header activeContent={this.state.activeContent} NavigateBack={this.navigateBack}></Header> : ""}
         <IonContent>
           {this.SetContent()}
         </IonContent>
-        <Footer activeContent={this.state.activeContent} hasPhotosUploaded={this.state.numberOfImages !== 0} NavigateForward={this.navigateForward}/>
+        <Footer activeContent={this.state.activeContent} hasPhotosUploaded={this.state.selectedImages.length !== 0} NavigateForward={this.navigateForward}/>
+        <SlidingPanel type={'bottom'}
+          isOpen={this.showCheckout()}
+          size={40}>
+            <CompleteContent closeCheckout={this.closeCheckout} activeStyle={this.state.activeStyle} selectedImages={this.state.selectedImages}></CompleteContent>
+        </SlidingPanel>
       </IonPage>
     )
  }

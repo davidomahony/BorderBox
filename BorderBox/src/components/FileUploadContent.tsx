@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { removeCircle } from 'ionicons/icons'
+import { removeCircle, cloudUpload } from 'ionicons/icons'
 
 import './FileUpload.scss'
-import ImageUploader from 'react-images-upload';
+
 import {
   IonToolbar,
   IonTitle,
@@ -29,6 +29,7 @@ import {
 } from "@ionic/react";
 
 import CropModal from './CropModal'
+import {AutoCropper} from './ImageCropper'
 
 type SelectedImage = {
   identifier: string,
@@ -44,7 +45,7 @@ type State = {
 
 export class FileUploadContent extends React.Component<{
   activePhotos: SelectedImage[],
-  uploadPhoto: (identifier: string, path: string[] ) => void,
+  uploadPhoto: (identifier: string, path: string ) => void,
   removePhoto: (identifier: string, path: string ) => void,
   updateFromCrop: (img: any, id: string ) => void
 }, State> {
@@ -58,9 +59,11 @@ export class FileUploadContent extends React.Component<{
       }
   }
 
-  handleOnImageChange = (pictureFiles: any, pictureDataURLs: any) =>
+  handleOnImageChange = (file: any) =>
   {
-    this.props.uploadPhoto(`${this.props.activePhotos.length + 1}`, pictureDataURLs);
+    let imgAsUrl = URL.createObjectURL(file.target.files[0]);
+    this.props.uploadPhoto(`${this.props.activePhotos.length + 1}`, imgAsUrl);
+    
   }
 
   showCropModal = (image: SelectedImage) =>{
@@ -81,22 +84,32 @@ export class FileUploadContent extends React.Component<{
     this.props.updateFromCrop(img, identifier);
   }
 
+  DisplayCroppedImage(photo:any)
+  {
+    this.state = {
+      isCropModalVisible: true,
+      imageSourceForCrop: photo.selectImagePath,
+      selectedImageIdentifier: photo.identifier
+    }
+    return <img id={`image${photo.identifier}`} src={photo.croppedImagePath}></img>
+  }
+
   DisplayUploadedPhotos(){
     let windowWidth = window.innerWidth;
     return this.props.activePhotos.map(photo =>
       <div className="class" key={photo.identifier}>
         <IonCard key={photo.identifier}>
-        <img src={photo.croppedImagePath}></img>
         <IonCardHeader>
-            <IonCardTitle>
-                Price $12.99
-            </IonCardTitle>
+          <IonButton onClick={() => this.props.removePhoto(photo.identifier, photo.selectImagePath)}>
+              <IonIcon src={removeCircle}></IonIcon>
+          </IonButton>
         </IonCardHeader>
         <IonCardContent>
+        <img id={`image${photo.identifier}`} src={photo.croppedImagePath}></img>
           <IonRow>
-            <IonButton onClick={() => this.props.removePhoto(photo.identifier, photo.selectImagePath)}>
+            {/* <IonButton onClick={() => this.props.removePhoto(photo.identifier, photo.selectImagePath)}>
             <IonIcon src={removeCircle}></IonIcon>
-            </IonButton>
+            </IonButton> */}
             <IonButton onClick={() => this.showCropModal(photo)}>
               Crop & Resize
             </IonButton>
@@ -105,20 +118,6 @@ export class FileUploadContent extends React.Component<{
         </IonCard>
       </div>)
   }
-
-  //        {/* <img src={photo.selectImagePath}></img>
-  //      <IonCardContent>
-  //        <IonCol>
-//            <IonRow>
-  //            <IonImg src={photo.selectImagePath}></IonImg>
-    //        </IonRow>
-      //      <IonRow>
-       //       <IonButton onClick={() => this.props.removePhoto(photo.identifier, photo.selectImagePath)}>
-        //      <IonIcon src={removeCircle}></IonIcon>
-         //     </IonButton>
-        //    </IonRow>
-  //        </IonCol>
-    //    </IonCardContent> */}
 
   render() {
     return(
@@ -144,13 +143,12 @@ export class FileUploadContent extends React.Component<{
               {this.DisplayUploadedPhotos()}
               <IonCard className="addCard">
                 <IonCardContent>
-                  <ImageUploader
-                    withIcon={true}
-                    buttonText='Choose images'
-                    onChange={this.handleOnImageChange}
-                    imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                    maxFileSize={5242880}
-                    />
+                <div className='button'>
+                  <label htmlFor='single'>
+                    <IonIcon src={cloudUpload} size="large" ></IonIcon>
+                  </label>
+                  <input type='file' id='single' onChange={this.handleOnImageChange} /> 
+                </div>
                 </IonCardContent>
               </IonCard>
             </IonCardContent>

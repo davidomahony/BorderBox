@@ -37,3 +37,14 @@
   width: 95%;
   margin: auto;
   }
+
+  input[type=file] { 
+    visibility: hidden;
+    position: absolute
+  }
+
+  .delete {
+    position: relative;
+    top: 16px;
+    right: 15px
+  }

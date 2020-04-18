@@ -50,3 +50,17 @@ class ImageCropper extends React.Component<{
 }
 
 export default ImageCropper;
+
+export function AutoCropper(img: any) {
+    let result  :any = null
+    const cropper = new Cropper(img, {
+        zoomable: false,
+        scalable: false,
+        aspectRatio: 1,
+        crop: () => {
+            const canvas = cropper.getCroppedCanvas();
+            result = canvas.toDataURL("image/png");
+        }
+    });
+    return result;
+}
